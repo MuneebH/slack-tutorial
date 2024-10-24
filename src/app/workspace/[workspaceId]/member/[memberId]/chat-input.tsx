@@ -10,10 +10,11 @@ import { toast } from "sonner";
 
 interface ChatInputProps {
     placeholder: string;
+    conversationId: Id<"conversations">;
 };
 
 type CreateMessageValues = {
-    channelId: Id<"channels">;
+    conversationId: Id<"conversations">;
     workspaceId: Id<"workspaces">;
     body: string;
     image?: Id<"_storage"> | undefined;
@@ -21,14 +22,13 @@ type CreateMessageValues = {
 
 const Editor = dynamic(() => import("@/src/components/editor"), {ssr: false});
 
-export const ChatInput = ({placeholder}: ChatInputProps) => { 
+export const ChatInput = ({placeholder, conversationId}: ChatInputProps) => { 
     const[editorKey, setEditorKey] = useState(0);
     const[isPending, setIsPending] = useState(false);
     
     const editorRef = useRef<Quill | null>(null);
 
     const workspaceId = useWorkspaceId();
-    const channelId = useChannelId();
 
     const { mutate: generateUploadUrl } = useGenerateUploadUrl();
     const { mutate: createMessage } = useCreateMessage();
@@ -45,7 +45,7 @@ export const ChatInput = ({placeholder}: ChatInputProps) => {
             editorRef?.current?.enable(false);
 
             const values: CreateMessageValues = {
-                channelId,
+                conversationId,
                 workspaceId,
                 body,
                 image: undefined,
